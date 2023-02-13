@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon",
-    "start": "npx ts-node index.ts"
+    "start": "npx ts-node index.ts",
+    "lint": "eslint . --ext .ts"
   },
   "author": "Samuel Koivisto",
   "license": "UNLICENSED",

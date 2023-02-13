@@ -5,9 +5,10 @@ import { UserRoleEnum } from "../../models/Users";
 
 dotenv.config();
 
-export async function initializeDatabase(db: Kysely<any>): Promise<void> {
+export async function createUserTable(db: Kysely<any>): Promise<void> {
   await db.schema
     .createTable("users")
+    .ifNotExists()
     .addColumn("id", "serial", (col) => col.primaryKey())
     .addColumn("username", "varchar", (col) => col.notNull().unique())
     .addColumn("password", "varchar", (col) => col.notNull())
@@ -24,9 +25,7 @@ export async function initializeDatabase(db: Kysely<any>): Promise<void> {
     .execute();
 }
 
-export async function initializeAdmin(
-  db: Kysely<any>
-): Promise<any | undefined> {
+export async function createAdmin(db: Kysely<any>): Promise<any | undefined> {
   const username = process.env.ADMIN_USERNAME;
   const password = process.env.ADMIN_PASSWORD;
   const email = process.env.ADMIN_EMAIL;
@@ -48,11 +47,26 @@ export async function initializeAdmin(
   return id;
 }
 
-export async function checkUsers(db: Kysely<any>): Promise<any> {
+export async function checkIsAdminCreated(db: Kysely<any>): Promise<any> {
   const result = await db
     .selectFrom("users")
     .selectAll()
     .where("role", "=", UserRoleEnum.ADMIN)
     .executeTakeFirst();
   return result;
+}
+
+export async function initializeDatabase(db: Kysely<any>): Promise<void> {
+  try {
+    await createUserTable(db);
+    await checkIsAdminCreated(db).then((payload) => {
+      if (payload) {
+        console.log("Server is connected to the database.");
+      } else {
+        createAdmin(db);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
