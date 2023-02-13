@@ -63,7 +63,12 @@ export async function initializeDatabase(db: Kysely<any>): Promise<void> {
       if (payload) {
         console.log("Server is connected to the database.");
       } else {
-        createAdmin(db);
+        createAdmin(db)
+          .then(() => {
+            console.log("Server is connected to the database.");
+            console.log("Admin user created.");
+          })
+          .catch((error) => console.log(error));
       }
     });
   } catch (error) {
