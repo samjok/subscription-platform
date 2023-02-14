@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "nodemon",
     "start": "npx ts-node index.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint src/**/*.ts"
   },
   "author": "Samuel Koivisto",
   "license": "UNLICENSED",
@@ -28,6 +28,9 @@
     "@types/jsonwebtoken": "^9.0.1",
     "@types/node": "^18.13.0",
     "@types/pg": "^8.6.6",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
+    "eslint": "^8.34.0",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
