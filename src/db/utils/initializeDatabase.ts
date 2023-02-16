@@ -25,12 +25,13 @@ export async function createUserTable(db: Kysely<any>): Promise<void> {
     .execute();
 }
 
-export async function createAdmin(db: Kysely<any>): Promise<any | undefined> {
+export async function createAdmin(db: Kysely<any>): Promise<boolean> {
   const username = process.env.ADMIN_USERNAME;
   const password = process.env.ADMIN_PASSWORD;
   const email = process.env.ADMIN_EMAIL;
 
-  if (!password || !username || !email) return;
+  if (!password || !username || !email)
+    throw new Error("Environmental variables for the admin are missing.");
 
   const salt = await bcrypt.genSalt(10);
   const cryptedPassword = await bcrypt.hash(password, salt);
@@ -44,34 +45,47 @@ export async function createAdmin(db: Kysely<any>): Promise<any | undefined> {
     })
     .returning("id")
     .executeTakeFirstOrThrow();
-  return id;
+  return Boolean(id);
 }
 
-export async function checkIsAdminCreated(db: Kysely<any>): Promise<any> {
+export async function checkIsAdminCreated(db: Kysely<any>): Promise<boolean> {
   const result = await db
     .selectFrom("users")
     .selectAll()
     .where("role", "=", UserRoleEnum.ADMIN)
     .executeTakeFirst();
-  return result;
+  return Boolean(result);
 }
 
-export async function initializeDatabase(db: Kysely<any>): Promise<void> {
+type Message = {
+  status: string;
+  msg: any;
+};
+
+export async function initializeDatabase(db: Kysely<any>): Promise<Message> {
   try {
     await createUserTable(db);
-    await checkIsAdminCreated(db).then((payload) => {
-      if (payload) {
-        console.log("Server is connected to the database.");
+    const isAdmin = await checkIsAdminCreated(db);
+    if (isAdmin) {
+      return {
+        status: "success",
+        msg: "Server is connected to PostgreSQL database.",
+      };
+    } else {
+      const isAdminCreated = await createAdmin(db);
+      if (isAdminCreated) {
+        return {
+          status: "success",
+          msg: "Server is connected to PostgreSQL database. Admin user created.",
+        };
       } else {
-        createAdmin(db)
-          .then(() => {
-            console.log("Server is connected to the database.");
-            console.log("Admin user created.");
-          })
-          .catch((error) => console.log(error));
+        throw new Error("Failed to create admin user.");
       }
-    });
+    }
   } catch (error) {
-    console.log(error);
+    return {
+      status: "error",
+      msg: error,
+    };
   }
 }
