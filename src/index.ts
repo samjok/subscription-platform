@@ -27,4 +27,8 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}.`);
 });
 
-initializeDatabase(db);
+initializeDatabase(db)
+  .then((payload) => {
+    console.log(payload?.msg);
+  })
+  .catch((error) => console.log(error));
