@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import db from "./db";
-import { initializeDatabase } from "./db/utils/initializeDatabase";
+import { db, initializeDatabase } from "./database";
+import { createRoutes } from "./routes";
 
 const app = express();
 
@@ -19,7 +19,7 @@ const port = 8084;
 
 app.use(express.json());
 
-// app.use("/api", createRoutes());
+app.use("/api", createRoutes());
 
 app.get("/", (_req, res) => res.send("Server is running."));
 
