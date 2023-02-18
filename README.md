@@ -28,7 +28,8 @@ DB_DATABASE=
 DB_PORT=
 ```
 
-You need to give also admin credentials you want to use for admin user which will be created when you start the server first time. You can give any credentials you want and email doesn't need to be real one. The .env file is in .gitignore so its content won't go to the GitHub. Don't add any information to .env-template file!
+You need to give also admin credentials you want to use for admin user which will be created when you start the server first time. You can give any credentials you want and email doesn't need to be real one. Give also token secrets (it can be any string you want) which are used to generate access and refresh tokens.
+The .env file is in .gitignore so its content won't go to the GitHub. Don't add any information to .env-template file!
 
 Clone this repository and install its dependencies by running command `npm ci` in the project's root directory. Then you can start the backend by command `npm run watch`.
 
