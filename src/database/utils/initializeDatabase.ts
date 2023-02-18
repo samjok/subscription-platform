@@ -2,6 +2,7 @@ import { Kysely, sql } from "kysely";
 import bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
 import { UserRoleEnum } from "../../models/Users";
+import { Message } from "../../types";
 
 dotenv.config();
 
@@ -57,25 +58,20 @@ export async function checkIsAdminCreated(db: Kysely<any>): Promise<boolean> {
   return Boolean(result);
 }
 
-type Message = {
-  status: string;
-  msg: any;
-};
-
 export async function initializeDatabase(db: Kysely<any>): Promise<Message> {
   try {
     await createUserTable(db);
     const isAdmin = await checkIsAdminCreated(db);
     if (isAdmin) {
       return {
-        status: "success",
+        success: true,
         msg: "Server is connected to PostgreSQL database.",
       };
     } else {
       const isAdminCreated = await createAdmin(db);
       if (isAdminCreated) {
         return {
-          status: "success",
+          success: true,
           msg: "Server is connected to PostgreSQL database. Admin user created.",
         };
       } else {
@@ -84,8 +80,9 @@ export async function initializeDatabase(db: Kysely<any>): Promise<Message> {
     }
   } catch (error) {
     return {
-      status: "error",
-      msg: error,
+      success: false,
+      msg: "Error occured when trying to initialize database.",
+      error,
     };
   }
 }
