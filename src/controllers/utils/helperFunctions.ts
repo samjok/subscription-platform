@@ -1,16 +1,9 @@
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { UserRole } from "../../models/Users";
 import { Message } from "../../types";
 
-type TokenData = {
-  id: number;
-  username: string;
-  role: UserRole;
-};
-
 export async function generateTokens(
-  data: TokenData,
+  data: string,
   accessTokenExpirationTimeInMinutes: number,
   refreshTokenExpirationTimeInMinutes: number
 ) {
